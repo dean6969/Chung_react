@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <style>
+      #mapid {
+        height: 300px;
+      }
+
+      #speedChart {
+        height: 400px !important;
+      }
+
+      /* #mapid:hover{
+        transform: scale(1.1);
+        box-shadow: 0px 10px 20px 2px rgba(0, 0, 0, 0.25);
+        transition-delay:0.8s;
+    } */
+
+    #mapid{
+        transition: 0.2s;
+        border: 3px solid green;
+        border-radius: 15px;
+    }
+
+    #speedChart{
+        transition: 0.2s;
+        border: 3px solid green;
+        border-radius: 15px;
+    }
+
+    /* #speedChart:hover{
+        transform: scale(1.1);
+        box-shadow: 0px 10px 20px 2px rgba(0, 0, 0, 0.25);
+        transition-delay:0.2s;
+    } */
+
+    #description{
+  border: 3px solid green;
+  border-radius: 15px;
+  text-align: justify;
+    }
+    
+
+    </style>
+</head>
+<body>
+    <input type="range" id="slider" min="1990" max="2017" id="slider" />
+    <span id="display"></span>
+    <select id="box_year">
+      <script language="javascript" type="text/javascript">
+        for (var d = 1990; d <= 2017; d++) {
+          document.write("<option>" + d + "</option>");
+        }
+      </script>
+    </select>
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <div id="mapid"></div>
+                <select id="box_state">
+                <option selected>NSW</option>
+                <option>VIC</option>
+                <option>QLD</option>
+                <option>SA</option>
+                <option>WA</option>
+                <option>TAS</option>
+                <option>NT</option>
+                </select>
+                <canvas id="speedChart" width="600" height="300"></canvas>
+            </div>
+            <div class="col-4" id="description">
+                New South Wales (NSW) showed a consistent decrease in CO2 emissions per capita throughout the given period. From 29.9 tonnes per capita in 1990, it dropped to 16.7 tonnes per capita in 2017. This indicates a successful effort to reduce emissions through various policies and technological advancements. <br>
+<br>
+The Northern Territory (NT) had the highest CO2 emissions per capita in multiple years throughout the period, peaking at 105.9 tonnes per capita in 2000. Despite reducing emissions to 66.9 tonnes per capita in 2017, NT remained one of the largest emitters in Australia, likely due to its vast territory and significant mining and natural gas industries. <br>
+<br>
+South Australia (SA) showed considerable progress in reducing CO2 emissions per capita, declining from 25.2 tonnes per capita in 1990 to 12.8 tonnes per capita in 2017. This can be attributed to the state's increased focus on renewable energy sources such as wind and solar power.<br>
+<br>
+Victoria (VIC) demonstrated a gradual decrease in CO2 emissions per capita over the years. From 24.7 tonnes per capita in 1990, it dropped to 17.4 tonnes per capita in 2017. This reflects the state's efforts in implementing sustainable practices and transitioning to cleaner energy sources.<br>
+<br>
+Western Australia (WA) experienced fluctuations in its CO2 emissions per capita. While it managed to reduce its emissions from 43.8 tonnes per capita in 1990 to 34.4 tonnes per capita in 2017, the state still had relatively high emissions, possibly due to its large mining and natural gas sectors.<br>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+        axios({
+        url: `https://backendtp234.onrender.com/get_fulldata`,
+        method: "get",
+      }).then((res) => {
+        this.records = res.data;
+        data = JSON.parse(JSON.stringify(this.records));
+
+        const data_state = data.sort((a, b) => {
+            if (a.Year < b.Year) {
+                return -1;
+            }
+            })
+            
+            default_value = []
+
+            for (i in data_state){
+                if (data_state[i].State === "NSW"){
+                    default_value.push(data_state[i]["co2"])
+                }
+            }
+            const speedCanvas = document.getElementById("speedChart");
+
+            Chart.defaults.font.family = "Teko";
+            Chart.defaults.font.size = 22;
+            Chart.defaults.color = "black";
+
+            let cols = [];
+            for (let i = 1990; i <= 2017; i++) {
+            cols.push(i);
+            }
+
+            let speedData = {
+            labels: cols,
+            datasets: [
+                {
+                label: "Co2 in NSW",
+                data: default_value,
+                backgroundColor: "rgba(227, 82, 20, 0.3)",
+                hoverBackgroundColor: "rgba(227, 82, 20, 1)",
+                hoverBorderColor: "red",
+                fill: {
+                    target: "origin",
+                    above: "rgba(227, 82, 20, 0.3)", // Area will be red above the origin
+                    below: "rgba(227, 82, 20, 0.3)", // And blue below the origin
+                },
+                pointStyle: "circle",
+                pointRadius: 5,
+                pointHoverRadius: 25,
+                },
+            ],
+            };
+
+            let lineChart = new Chart(speedCanvas, {
+            type: "line",
+            data: speedData,
+            Option: {
+                reponsive: true,
+                tooltip: {
+                usePointStyle: true,
+                
+                },
+            },
+            });
+
+
+            var map = L.map("mapid");
+
+        map.setView([-25, 133], 3);
+
+        var tiles = L.tileLayer(
+          "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            maxZoom: 19,
+            attribution:
+              '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          }
+        ).addTo(map);
+
+        const box = document.getElementById("box_year");
+
+        axios({
+          url: `https://backendtp234.onrender.com/search1?message=2017`,
+          method: "get",
+        }).then((res) => {
+          this.records = res.data;
+
+          this.file = JSON.parse(JSON.stringify(this.records));
+
+          var color_array = [];
+
+          for (i in this.file.features) {
+            color_array.push(this.file.features[i].properties.density);
+          }
+
+          color_array = color_array.sort(function (a, b) {
+            return b - a;
+          });
+
+          function style(feature) {
+            return {
+              fillColor: getColor(feature.properties.density),
+              weight: 2,
+              opacity: 1,
+              color: "white",
+              dashArray: "3",
+              fillOpacity: 0.7,
+            };
+          }
+
+          const info = L.control();
+
+          info.onAdd = function (map) {
+            this._div = L.DomUtil.create("div", "info");
+            this.update();
+            return this._div;
+          };
+
+          info.update = function (props) {
+            const contents = props
+              ? `<b>${props.name}</b><br />${props.density} Co2 / capita<sup>2</sup>`
+              : "Hover over a state";
+            this._div.innerHTML = `<h4>Australia Co2</h4>${contents}`;
+          };
+
+          info.addTo(map);
+
+          function getColor(d) {
+            return d < 10
+              ? "#FFEDA0"
+              : d < 20
+              ? "#FED976"
+              : d < 30
+              ? "#FEB24C"
+              : d < 40
+              ? "#FD8D3C"
+              : d < 50
+              ? "#FC4E2A"
+              : d < 60
+              ? "#E31A1C"
+              : d < 70
+              ? "#BD0026"
+              : "#800026";
+          }
+
+          function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
+          }
+
+          function highlightFeature(e) {
+            var layer = e.target;
+
+            console.log(layer.feature.properties.name);
+
+            data_change = [];
+                for (i in data_state) {
+                    if (data_state[i].State === layer.feature.properties.name){
+                        data_change.push(data_state[i]["co2"])
+                } 
+            }
+
+            lineChart.data.datasets[0].data = data_change;
+            lineChart.data.datasets[0].label = `CO2 in ${layer.feature.properties.name}`;
+            lineChart.update();
+
+            layer.setStyle({
+              weight: 5,
+              color: "#666",
+              dashArray: "",
+              fillOpacity: 0.2,
+            });
+
+            layer.bringToFront();
+
+            info.update(layer.feature.properties);
+          }
+
+          var geojson = L.geoJson(this.file, {
+            style,
+            onEachFeature,
+          }).addTo(map);
+
+          function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+            info.update();
+          }
+
+          function onEachFeature(feature, layer) {
+            layer.on({
+              mouseover: highlightFeature,
+              mouseout: resetHighlight,
+              click: zoomToFeature,
+            });
+          }
+
+          // geojson = L.geoJson(statesData, {
+          //     style: style,
+          //     onEachFeature: onEachFeature
+          // }).addTo(map);
+
+          // method that we will use to update the control based on feature properties passed
+
+          info.update = function (props) {
+            this._div.innerHTML =
+              "<h4>CO2 in Australia per states</h4>" +
+              (props
+                ? "<b>" +
+                  props.STATE_NAME +
+                  "</b><br />" +
+                  props.density +
+                  " Co2 / capita"
+                : "Hover over a state");
+          };
+
+          info.addTo(map);
+
+          var legend = L.control({ position: "bottomright" });
+
+          legend.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "info legend"),
+              grades = [0, 10, 20, 30, 40, 50, 60, 70],
+              labels = [];
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            for (var i = 0; i < grades.length; i++) {
+              div.innerHTML +=
+                '<i style="background:' +
+                getColor(grades[i] + 1) +
+                '"></i> ' +
+                grades[i] +
+                (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+            }
+
+            return div;
+          };
+
+          legend.addTo(map);
+        });
+
+        box.onchange = function () {
+          document.querySelectorAll(".info").forEach((el) => el.remove());
+
+          this.message = box.value;
+
+          axios({
+            url: `https://backendtp234.onrender.com/search1?message=${this.message}`,
+            method: "get",
+          }).then((res) => {
+            this.records = res.data;
+
+            this.file = JSON.parse(JSON.stringify(this.records));
+
+            var color_array = [];
+
+            for (i in this.file.features) {
+              color_array.push(this.file.features[i].properties.density);
+            }
+
+            color_array = color_array.sort(function (a, b) {
+              return b - a;
+            });
+
+            function style(feature) {
+              return {
+                fillColor: getColor(feature.properties.density),
+                weight: 2,
+                opacity: 1,
+                color: "white",
+                dashArray: "3",
+                fillOpacity: 0.7,
+              };
+            }
+
+            const info = L.control();
+
+            info.onAdd = function (map) {
+              this._div = L.DomUtil.create("div", "info");
+              this.update();
+              return this._div;
+            };
+
+            info.update = function (props) {
+              const contents = props
+                ? `<b>${props.name}</b><br />${props.density} Co2 / capita<sup>2</sup>`
+                : "Hover over a state";
+              this._div.innerHTML = `<h4>Australia Co2</h4>${contents}`;
+            };
+
+            info.addTo(map);
+
+            function getColor(d) {
+              return d < 10
+                ? "#FFEDA0"
+                : d < 20
+                ? "#FED976"
+                : d < 30
+                ? "#FEB24C"
+                : d < 40
+                ? "#FD8D3C"
+                : d < 50
+                ? "#FC4E2A"
+                : d < 60
+                ? "#E31A1C"
+                : d < 70
+                ? "#BD0026"
+                : "#800026";
+            }
+
+            function zoomToFeature(e) {
+              map.fitBounds(e.target.getBounds());
+            }
+
+            function highlightFeature(e) {
+              var layer = e.target;
+
+              console.log(layer.feature.properties.name);
+
+              data_change = [];
+                for (i in data_state) {
+                    if (data_state[i].State === layer.feature.properties.name){
+                        data_change.push(data_state[i]["co2"])
+                } 
+            }
+
+            lineChart.data.datasets[0].data = data_change;
+            lineChart.data.datasets[0].label = `CO2 in ${layer.feature.properties.name}`;
+            lineChart.update();
+
+              layer.setStyle({
+                weight: 5,
+                color: "#666",
+                dashArray: "",
+                fillOpacity: 0.2,
+              });
+
+              layer.bringToFront();
+
+              info.update(layer.feature.properties);
+            }
+
+            var geojson = L.geoJson(this.file, {
+              style,
+              onEachFeature,
+            }).addTo(map);
+
+            function resetHighlight(e) {
+              geojson.resetStyle(e.target);
+              info.update();
+            }
+
+            function onEachFeature(feature, layer) {
+              layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: zoomToFeature,
+              });
+            }
+
+            // geojson = L.geoJson(statesData, {
+            //     style: style,
+            //     onEachFeature: onEachFeature
+            // }).addTo(map);
+
+            // method that we will use to update the control based on feature properties passed
+
+            info.update = function (props) {
+              this._div.innerHTML =
+                "<h4>CO2 in Australia per states</h4>" +
+                (props
+                  ? "<b>" +
+                    props.STATE_NAME +
+                    "</b><br />" +
+                    props.density +
+                    " Co2 / capita"
+                  : "Hover over a state");
+            };
+
+            info.addTo(map);
+
+            var legend = L.control({ position: "bottomright" });
+
+            legend.onAdd = function (map) {
+              var div = L.DomUtil.create("div", "info legend"),
+                grades = [0, 10, 20, 30, 40, 50, 60, 70],
+                labels = [];
+
+              // loop through our density intervals and generate a label with a colored square for each interval
+              for (var i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                  '<i style="background:' +
+                  getColor(grades[i] + 1) +
+                  '"></i> ' +
+                  grades[i] +
+                  (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+              }
+
+              return div;
+            };
+
+            legend.addTo(map);
+          });
+        };
+
+        box_state.onchange = function () {
+          this.message = box_state.value;
+
+          data_change = [];
+                for (i in data_state) {
+                    console.log(data_state[i].State)
+                    if (data_state[i].State === this.message){
+                        data_change.push(data_state[i]["co2"])
+                } 
+            }
+
+            console.log(data_change)
+
+            lineChart.data.datasets[0].data = data_change;
+            lineChart.data.datasets[0].label = `CO2 in ${this.message}`;
+            lineChart.update();
+        };
+
+
+                    
+                });
+
+
+
+    </script>
+</body>
+</html>
