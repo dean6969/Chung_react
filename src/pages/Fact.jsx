@@ -1,13 +1,15 @@
-import Fact_graph from '../components/Facts/Fact_viz';
-import Navbar from '../components/Homepage/Navbar';
+import FactViz from '../components/fact/FactViz';
+import Navbar from '../components/common/Navbar';
+import Footer from '../components/common/Footer';
 
 function Fact() {
-    return (
-      <div>
-        <Navbar />
-        <Fact_graph />
-      </div>
-    );
-  }
-  
-  export default Fact;
+  return (
+    <div>
+      <Navbar />
+      <FactViz />
+      <Footer />
+    </div>
+  );
+}
+
+export default Fact;

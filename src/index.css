@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-  background: url("./assets/home-bg.png") no-repeat center fixed ;
-  background-size: cover; 
+body {
+  background: url('./assets/home-bg.png') no-repeat center fixed;
+  background-size: cover;
+}
+
+html {
+  overflow-y: scroll;
 }

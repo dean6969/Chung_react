@@ -1,19 +1,17 @@
 import React from 'react';
-import Cards from '../components/Homepage/Cards';
-import Footer from '../components/Homepage/Footer';
-import Hero from '../components/Homepage/Hero';
-import Navbar from '../components/Homepage/Navbar';
+import Cards from '../components/home/Cards';
+import Footer from '../components/common/Footer';
+import Hero from '../components/home/Hero';
+import Navbar from '../components/common/Navbar';
 
 function Homepage() {
   return (
-    <div>
+    <>
       <Navbar />
       <Hero />
-      {/* <Analytics />
-      <Newsletter /> */}
-      <Cards/>
+      <Cards />
       <Footer />
-    </div>
+    </>
   );
 }
 
