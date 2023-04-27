@@ -1,12 +1,14 @@
-import FactViz from '../components/fact/FactViz';
+import Leaflet from '../components/fact/Leaflet';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
+import Chart from '../components/fact/Chart';
 
 function Fact() {
   return (
     <div>
       <Navbar />
-      <FactViz />
+      <Leaflet />
+      <Chart />
       <Footer />
     </div>
   );

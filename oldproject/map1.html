@@ -118,6 +118,9 @@ Western Australia (WA) experienced fluctuations in its CO2 emissions per capita.
                     default_value.push(data_state[i]["co2"])
                 }
             }
+
+            // console.log(default_value);
+
             const speedCanvas = document.getElementById("speedChart");
 
             Chart.defaults.font.family = "Teko";
@@ -243,6 +246,7 @@ Western Australia (WA) experienced fluctuations in its CO2 emissions per capita.
           }
 
           function zoomToFeature(e) {
+            console.log(e.target)
             map.fitBounds(e.target.getBounds());
           }
 
