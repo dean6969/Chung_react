@@ -5,7 +5,7 @@ import { api } from '../../api/axios';
 import Loading from './Loading';
 import Geo from './Geo';
 import Info from './Info';
-import { Legend } from 'chart.js';
+import Legend from './Legend';
 
 const position = [-28, 133];
 
