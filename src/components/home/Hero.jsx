@@ -31,7 +31,7 @@ const Hero = () => {
         <HashLink
           smooth
           to="/#cards"
-          className="bg-[#00df9a] w-[200px] rounded-md font-medium my-6 mx-auto py-3 text-black hover:scale-150 duration-300"
+          className="bg-[#00df9a] w-[200px] rounded-md font-medium my-6 mx-auto py-3 text-black hover:scale-125 duration-300"
         >
           Get Started
         </HashLink>

@@ -2,13 +2,13 @@ import React, { useRef } from 'react';
 import { GeoJSON, useMap } from 'react-leaflet';
 import { style } from '../../utils/function';
 
-const Geo = ({ file }) => {
+const Geo = ({ file, key, handleStateChange }) => {
   const map = useMap();
   const geoJsonRef = useRef();
 
   function resetHighlight(e) {
     geoJsonRef.current.resetStyle(e.sourceTarget);
-    // info.update();
+    handleStateChange(null);
   }
 
   function highlightFeature(e) {
@@ -22,7 +22,7 @@ const Geo = ({ file }) => {
     });
 
     layer.bringToFront();
-    // info.update(layer.feature.properties);
+    handleStateChange(layer.feature.properties);
   }
 
   function zoomToFeature(e) {
@@ -31,6 +31,7 @@ const Geo = ({ file }) => {
 
   return (
     <GeoJSON
+      key={key}
       ref={geoJsonRef}
       data={file}
       style={style}
