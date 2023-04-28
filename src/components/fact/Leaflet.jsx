@@ -36,11 +36,11 @@ const Leaflet = () => {
   };
 
   return (
-    <div className="max-w-[1240px] mx-auto py-12">
+    <div className="max-w-[1240px] mx-auto">
       <div className="mb-5 flex justify-between items-center">
         <div className="flex">
           <p className="text-white mr-3">Select year: </p>
-          <select onChange={handleChange}>
+          <select className="" onChange={handleChange}>
             {options.map((option) => (
               <option key={option}>{option}</option>
             ))}
@@ -59,9 +59,7 @@ const Leaflet = () => {
       </div>
 
       <div className="max-w-[1240px] mx-auto rounded bg-white p-3">
-        {!file ? (
-          <Loading />
-        ) : (
+        {file ? (
           <MapContainer
             center={position}
             zoom={3}
@@ -79,6 +77,8 @@ const Leaflet = () => {
               handleStateChange={handleStateChange}
             />
           </MapContainer>
+        ) : (
+          <Loading />
         )}
       </div>
       <Chart leafletState={state ? state.name : 'NSW'} />
